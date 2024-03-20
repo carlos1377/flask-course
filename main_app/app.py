@@ -1,11 +1,9 @@
-from flask import Flask, jsonify
-from flask_restful import Api, Resource
-from purchase_orders.routes import PurchaseOrders
-
-app = Flask(__name__)
-api = Api(app=app)
+from flask import Flask
+from flask_restful import Api
 
 
-api.add_resource(PurchaseOrders, '/purchase_orders')
+def create_app():
+    app = Flask(__name__)
+    api = Api(app=app)
 
-app.run(debug=True)
+    return app
