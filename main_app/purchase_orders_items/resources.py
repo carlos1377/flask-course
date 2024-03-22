@@ -8,7 +8,7 @@ purchase_orders = [
         'items': [
             {
                 'id': 1,
-                'description': 'Item pedido 1',
+                'description': 'Item do pedido 1',
                 'price': 20.99
             }
         ]
@@ -21,4 +21,4 @@ class PurchaseOrderItems(Resource):
         for po in purchase_orders:
             if po['id'] == id:
                 return jsonify(po['items'])
-        return jsonify
+        return jsonify({'message': f'Pedido de ID {id} não encontrado'})
