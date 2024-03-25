@@ -27,7 +27,7 @@ def test_post_purchase_order_item(test_client):
     }
 
     response = test_client.post(
-        '/purchase_order_items/1/items',
+        '/purchase_orders/1/items',
         data=json.dumps(obj),
         content_type='application/json'
     )
@@ -47,7 +47,7 @@ def test_post_purchase_order_item_invalid_id(test_client):
     }
 
     response = test_client.post(
-        '/purchase_order_items/1/items',
+        '/purchase_orders/1/items',
         data=json.dumps(obj),
         content_type='application/json'
     )
@@ -63,7 +63,7 @@ def test_post_purchase_order_item_invalid_description(test_client):
     }
 
     response = test_client.post(
-        '/purchase_order_items/1/items',
+        '/purchase_orders/1/items',
         data=json.dumps(obj),
         content_type='application/json'
     )
@@ -79,10 +79,27 @@ def test_post_purchase_order_item_invalid_price(test_client):
     }
 
     response = test_client.post(
-        '/purchase_order_items/1/items',
+        '/purchase_orders/1/items',
         data=json.dumps(obj),
         content_type='application/json'
     )
 
     assert response.status_code == 400
     assert response.json['message']['price'] == 'Informe um preço válido'
+
+
+def test_post_purchase_order_invalid(test_client):
+    id = 99999
+    obj = {
+        'id': 2,
+        'description': 'Lorem ipsum',
+        'price': 14.99,
+    }
+
+    response = test_client.post(
+        f'/purchase_orders/{id}/items',
+        data=json.dumps(obj),
+        content_type='application/json'
+    )
+
+    assert response.json['message'] == f'Purchase order {id} não encontrado'
