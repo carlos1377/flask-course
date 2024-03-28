@@ -1,29 +1,11 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
-
-purchase_orders = [
-    {
-        'id': 1,
-        'description': 'Pedido de compra 1',
-        'items': [
-            {
-                'id': 1,
-                'description': 'Item do pedido 1',
-                'price': 20.99
-            }
-        ]
-    }
-]
+from main_app.models import PurchaseOrdersItemsModel
+from main_app.models import PurchaseOrderModel
 
 
 class PurchaseOrderItems(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument(
-        'id',
-        type=int,
-        required=True,
-        help='Informe um ID válido'
-    )
     parser.add_argument(
         'description',
         type=str,
@@ -38,23 +20,21 @@ class PurchaseOrderItems(Resource):
     )
 
     def get(self, id):
-        for po in purchase_orders:
-            if po['id'] == id:
-                return jsonify(po['items'])
-        return jsonify({'message': f'Pedido de ID {id} não encontrado'})
+        purchase_orders_items = PurchaseOrdersItemsModel \
+            .find_by_purchase_order_id(id)
+
+        return [p.as_dict() for p in purchase_orders_items]
 
     def post(self, id):
-        data = PurchaseOrderItems().parser.parse_args()
+        purchase_order = PurchaseOrderModel.find_by_id(id)
+        if purchase_order:
+            data = PurchaseOrderItems.parser.parse_args()
+            data['purchase_order_id'] = id
 
-        for po in purchase_orders:
-            if po['id'] == id:
-                po['items'].append({
-                    'id': data['id'],
-                    'description': data['description'],
-                    'price': data['price'],
-                }
-                )
+            purchase_orders_item = PurchaseOrdersItemsModel(**data)
 
-                return jsonify(po)
+            purchase_orders_item.save()
 
-        return jsonify({'message': f'Purchase order {id} não encontrado'})
+            return purchase_orders_item.as_dict()
+
+        return jsonify({'message': f"PurchaseOrder de id {id} não encontrado"})

@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
-from main_app.purchase_orders.model import PurchaseOrderModel
+from main_app.models import PurchaseOrderModel
 
 
 class HealthCheck(Resource):
